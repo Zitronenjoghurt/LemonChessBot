@@ -11,7 +11,6 @@ class ApiResponse():
 
 class ApiController():
     _instance = None
-    BASE_URL = "https://chess.lemon.industries"
 
     def __init__(self) -> None:
         if ApiController._instance is not None:
@@ -27,8 +26,8 @@ class ApiController():
         endpoint = "/".join(endpoint_path)
         arguments = "&".join([f"{key}={value}" for key, value in kwargs.items()])
         if len(kwargs) > 0:
-            return f"{self.BASE_URL}/{endpoint}?{arguments}"
-        return f"{self.BASE_URL}/{endpoint}"
+            return f"{CONFIG.API_URL}/{endpoint}?{arguments}"
+        return f"{CONFIG.API_URL}/{endpoint}"
     
     def build_headers(self, additional_data: Optional[dict] = None) -> dict:
         headers = {

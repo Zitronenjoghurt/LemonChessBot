@@ -2,5 +2,7 @@
     "prefix": "%",
     "token": "BOT_TOKEN",
     "owner_id": "OWNER_USER_ID",
-    "api_key": "LEMON_CHESS_API_KEY (needs negotiator permission)"
+    "api_key": "LEMON_CHESS_API_KEY (needs negotiator permission)",
+    "api_url": "LEMON CHESS API URL",
+    "db_url": "MONGODB URL"
 }

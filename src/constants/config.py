@@ -16,11 +16,15 @@ class Config():
         self.PREFIX = config_data.get("prefix", None)
         self.OWNER_ID = config_data.get("owner_id", None)
         self.API_KEY = config_data.get("api_key", None)
+        self.API_URL = config_data.get("api_url", None)
+        self.DB_URL = config_data.get("db_url", None)
 
         try:
             validate_of_type(self.BOT_TOKEN, str, "token")
             validate_of_type(self.PREFIX, str, "prefix")
             validate_of_type(self.API_KEY, str, "api_key")
+            validate_of_type(self.API_URL, str, "api_url")
+            validate_of_type(self.DB_URL, str, "db_url")
         except ValueError as e:
             raise RuntimeError(f"An error occured while initializing config: {e}")
 
