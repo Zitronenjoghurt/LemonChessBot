@@ -1,6 +1,7 @@
 import aiohttp
 from typing import Optional
 from src.constants.config import Config
+from src.logging.logger import BOTLOGGER
 
 CONFIG = Config.get_instance()
 
@@ -29,9 +30,9 @@ class ApiController():
             return f"{CONFIG.API_URL}/{endpoint}?{arguments}"
         return f"{CONFIG.API_URL}/{endpoint}"
     
-    def build_headers(self, additional_data: Optional[dict] = None) -> dict:
+    def build_headers(self, api_key: str, additional_data: Optional[dict] = None) -> dict:
         headers = {
-            'x-api-key': CONFIG.API_KEY
+            'x-api-key': api_key
         }
 
         if isinstance(additional_data, dict):
@@ -39,18 +40,20 @@ class ApiController():
 
         return headers
 
-    async def get(self, endpoint_path: list[str], headers: Optional[dict] = None, **params) -> ApiResponse:
+    async def get(self, endpoint_path: list[str], api_key: str, headers: Optional[dict] = None, **params) -> ApiResponse:
         url = self.generate_url(endpoint_path, **params)
 
-        async with aiohttp.ClientSession(headers=self.build_headers(headers)) as session:
+        async with aiohttp.ClientSession(headers=self.build_headers(api_key, headers)) as session:
             async with session.get(url) as response:
                 content = await response.text()
+                BOTLOGGER.api_request("GET", url, response.status, content)
                 return ApiResponse(response.status, content)
             
-    async def post(self, endpoint_path: list[str], headers: Optional[dict] = None, **params) -> ApiResponse:
+    async def post(self, endpoint_path: list[str], api_key: str, headers: Optional[dict] = None, **params) -> ApiResponse:
         url = self.generate_url(endpoint_path, **params)
 
-        async with aiohttp.ClientSession(headers=self.build_headers(headers)) as session:
+        async with aiohttp.ClientSession(headers=self.build_headers(api_key, headers)) as session:
             async with session.post(url) as response:
                 content = await response.text()
+                BOTLOGGER.api_request("POST", url, response.status, content)
                 return ApiResponse(response.status, content)

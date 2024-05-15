@@ -4,7 +4,7 @@ from typing import Optional
 from src.api.models.response_models import ApiKeyResponse
 from src.api.resources.user import register
 from src.entities.chess_user import ChessUser
-from src.error import UnexpectedApiError
+from src.error import ApiError
 from src.ui.custom_embeds import ErrorEmbed, SuccessEmbed
 
 async def retrieve_chess_user(interaction: discord.Interaction) -> Optional[ChessUser]:
@@ -103,12 +103,7 @@ class RegistrationModal(ui.Modal):
 
     async def on_submit(self, interaction: discord.Interaction):
         try:
-            response = await register(id=str(self.user.id), name=self.user.name, display_name=self.display_name.value)
-            if not isinstance(response, ApiKeyResponse):
-                await interaction.response.send_message(embed=ErrorEmbed(title="Already registered", message="Your discord user id is already linked to a LemonChess account."), ephemeral=True)
-                return
-            
+            await register(id=str(self.user.id), name=self.user.name, display_name=self.display_name.value)
             await interaction.response.send_message(embed=SuccessEmbed(title="Successfully registered", message="Your discord account was successfully linked to a LemonChess account.\nYou can now use all bot features."), ephemeral=True)
-
-        except UnexpectedApiError:
-            await interaction.response.send_message(embed=ErrorEmbed.unexpected_api_error(), ephemeral=True)
+        except ApiError as err:
+            await interaction.response.send_message(embed=err.get_embed(), ephemeral=True)

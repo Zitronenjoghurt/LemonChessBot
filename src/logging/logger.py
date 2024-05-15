@@ -81,6 +81,9 @@ class BotLogger:
 
     def get_logger(self):
         return self.logger
+    
+    def api_request(self, method: str, url: str, status: int, content: str):
+        self.logger.debug(f"[{status}] {method} {url}: {content}")
 
 BOTLOGGER = BotLogger()
 LOGGER = BOTLOGGER.get_logger()

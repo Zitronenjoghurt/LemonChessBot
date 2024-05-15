@@ -1,11 +1,13 @@
 from typing import Optional
 from src.api.api_controller import ApiController
 from src.api.models.response_models import ApiKeyResponse
-from src.error import UnexpectedApiError
+from src.constants.config import Config
+from src.error import UnexpectedApiError, ExpectedApiError
 
 API = ApiController.get_instance()
+CONFIG = Config.get_instance()
 
-async def register(id: str, name: str, display_name: str) -> Optional[ApiKeyResponse]:
+async def register(id: str, name: str, display_name: str) -> ApiKeyResponse:
     """Registers a user.
 
     Args:
@@ -19,11 +21,11 @@ async def register(id: str, name: str, display_name: str) -> Optional[ApiKeyResp
     Returns:
         Optional[ApiKeyResponse]: Api key, if the user was registered, else None
     """
-    response = await API.post(["user", "discord"], id=id, name=name, display_name=display_name)
+    response = await API.post(["user", "discord"], api_key=CONFIG.API_KEY, id=id, name=name, display_name=display_name)
     match response.status:
         case 200:
             return ApiKeyResponse.model_validate_json(response.content)
         case 400:
-            return None
+            raise ExpectedApiError(title="Already registered", message="Your discord user id is already linked to a LemonChess account.")
         case _:
             raise UnexpectedApiError(response)
