@@ -1,5 +1,7 @@
 from enum import Enum
+from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import ASCENDING, DESCENDING
 from src.constants.config import Config
 
 CONFIG = Config.get_instance()
@@ -29,8 +31,12 @@ class Database():
     async def find_one(self, collection: Collection, **kwargs):
         return await self.db[collection.value].find_one(kwargs)
     
-    async def find(self, collection: Collection, **kwargs):
-        cursor = self.db[collection.value].find(kwargs)
+    async def find(self, collection: Collection, sort_key: Optional[str] = None, descending: bool = True, **kwargs):
+        if isinstance(sort_key, str):
+            designator = DESCENDING if descending else ASCENDING
+            cursor = self.db[collection.value].find(kwargs).sort(sort_key, designator)
+        else:
+            cursor = self.db[collection.value].find(kwargs)
         return [document async for document in cursor]
 
     async def delete_one(self, collection: Collection, **kwargs) -> int:

@@ -4,6 +4,8 @@ from discord.ext import commands
 from typing import Optional
 from src.api.resources.room import create_room
 from src.error import ApiError
+from src.scrollables.chess_room_scrollable import ChessRoomScrollable
+from src.ui.paginated_embed import PaginatedEmbed, PaginatedView, send_paginated
 from src.ui.registration import retrieve_chess_user
 from src.utils.user_operations import retrieve_discord_user
 
@@ -39,6 +41,25 @@ class RoomCommands(commands.Cog):
         embed.add_field(name="PUBLIC", value=f"**`{room.public}`**")
 
         await interaction.followup.send(embed=embed)
+
+    @room_group.command(name="list", description="List all public multiplayer rooms")
+    async def room_list(self, interaction: discord.Interaction):
+        if not await retrieve_chess_user(interaction=interaction):
+            return
+        if not await retrieve_discord_user(interaction=interaction):
+            return
+        
+        await interaction.response.defer()
+
+        scrollable = await ChessRoomScrollable.create()
+        embed = PaginatedEmbed(
+            scrollable=scrollable,
+            title="PUBLIC ROOMS",
+            color=discord.Color.from_str("#8857bd")
+        )
+        await embed.initialize()
+
+        await send_paginated(interaction=interaction, embed=embed)
 
 async def setup(bot):
     await bot.add_cog(RoomCommands(bot))

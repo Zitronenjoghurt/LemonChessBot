@@ -5,25 +5,26 @@ from src.db import Database, Collection
 DB = Database.get_instance()
 
 T = TypeVar('T', bound='DatabaseEntity')
+
 class DatabaseEntity(BaseModel):
     COLLECTION: ClassVar[Collection] = Collection.NONE
     _id: str
 
     @classmethod
     async def find_one(cls: Type[T], **kwargs) -> Optional[T]:
-        result = await DB.find_one(cls.COLLECTION, **kwargs)
+        result = await DB.find_one(collection=cls.COLLECTION, **kwargs)
         if result:
             return cls.model_validate(result)
         return None
     
     @classmethod
-    async def find(cls: Type[T], **kwargs) -> list[T]:
-        results = await DB.find(cls.COLLECTION, **kwargs)
+    async def find(cls: Type[T], sort_key: Optional[str] = None, descending: bool = True, **kwargs) -> list[T]:
+        results = await DB.find(collection=cls.COLLECTION, sort_key=sort_key, descending=descending, **kwargs)
         return [cls.model_validate(result) for result in results]
     
     async def save(self):
         document = self.model_dump()
-        await DB.save(self.COLLECTION, document)
+        await DB.save(collection=self.COLLECTION, document=document)
     
     @classmethod
     async def load(cls: Type[T], **kwargs) -> T:
