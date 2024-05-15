@@ -1,5 +1,4 @@
 import discord
-from src.api.api_controller import ApiResponse
 from src.ui.custom_embeds import ErrorEmbed
 
 class ApiError(Exception):
@@ -11,7 +10,7 @@ class ApiError(Exception):
 class UnexpectedApiError(ApiError):
     """Raised when the API returned an unexpected response."""
     
-    def __init__(self, response: ApiResponse) -> None:
+    def __init__(self, response) -> None:
         super().__init__(f"Unexpected API response: [{response.status}] {response.content}")
 
     def get_embed(self) -> discord.Embed:
@@ -27,3 +26,12 @@ class ExpectedApiError(ApiError):
 
     def get_embed(self) -> discord.Embed:
         return ErrorEmbed(title=self.title, message=self.message)
+    
+class ApiConnectionError(ApiError):
+    """Raised when there was an error connecting to the API."""
+
+    def __init__(self) -> None:
+        super().__init__("Failed to establish a connection with the LemonChess API")
+
+    def get_embed(self) -> discord.Embed:
+        return ErrorEmbed(title="Connection Error", message="The bot failed to establish a connection with the LemonChess API, please try again later.")

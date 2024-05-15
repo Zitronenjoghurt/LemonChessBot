@@ -21,9 +21,7 @@ class RoomCommands(commands.Cog):
             return
         if not await retrieve_discord_user(interaction=interaction):
             return
-        
         await interaction.response.defer(ephemeral=not public)
-
         try:
             room = await create_room(api_key=chess_user.key, name=name, public=public)
         except ApiError as err:

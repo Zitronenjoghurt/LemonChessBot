@@ -1,5 +1,6 @@
 import aiohttp
 from typing import Optional
+from src.error import ApiConnectionError
 from src.constants.config import Config
 from src.logging.logger import BOTLOGGER
 
@@ -43,17 +44,23 @@ class ApiController():
     async def get(self, endpoint_path: list[str], api_key: str, headers: Optional[dict] = None, **params) -> ApiResponse:
         url = self.generate_url(endpoint_path, **params)
 
-        async with aiohttp.ClientSession(headers=self.build_headers(api_key, headers)) as session:
-            async with session.get(url) as response:
-                content = await response.text()
-                BOTLOGGER.api_request("GET", url, response.status, content)
-                return ApiResponse(response.status, content)
+        try:
+            async with aiohttp.ClientSession(headers=self.build_headers(api_key, headers)) as session:
+                async with session.get(url) as response:
+                    content = await response.text()
+                    BOTLOGGER.api_request("GET", url, response.status, content)
+                    return ApiResponse(response.status, content)
+        except aiohttp.ClientConnectionError:
+            raise ApiConnectionError()
             
     async def post(self, endpoint_path: list[str], api_key: str, headers: Optional[dict] = None, **params) -> ApiResponse:
         url = self.generate_url(endpoint_path, **params)
 
-        async with aiohttp.ClientSession(headers=self.build_headers(api_key, headers)) as session:
-            async with session.post(url) as response:
-                content = await response.text()
-                BOTLOGGER.api_request("POST", url, response.status, content)
-                return ApiResponse(response.status, content)
+        try:
+            async with aiohttp.ClientSession(headers=self.build_headers(api_key, headers)) as session:
+                async with session.post(url) as response:
+                    content = await response.text()
+                    BOTLOGGER.api_request("POST", url, response.status, content)
+                    return ApiResponse(response.status, content)
+        except aiohttp.ClientConnectionError:
+            raise ApiConnectionError()
