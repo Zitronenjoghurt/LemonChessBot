@@ -1,11 +1,11 @@
 from typing import Optional
 from src.api.api_controller import ApiController
 from src.api.models.response_models import ApiKeyResponse
-from src.error import UnecpectedApiError
+from src.error import UnexpectedApiError
 
 API = ApiController.get_instance()
 
-async def register(id: str, name: str) -> Optional[ApiKeyResponse]:
+async def register(id: str, name: str, display_name: str) -> Optional[ApiKeyResponse]:
     """Registers a user.
 
     Args:
@@ -19,11 +19,11 @@ async def register(id: str, name: str) -> Optional[ApiKeyResponse]:
     Returns:
         Optional[ApiKeyResponse]: Api key, if the user was registered, else None
     """
-    response = await API.post(["user", "discord"], id=id, name=name)
+    response = await API.post(["user", "discord"], id=id, name=name, display_name=display_name)
     match response.status:
         case 200:
             return ApiKeyResponse.model_validate_json(response.content)
         case 400:
             return None
         case _:
-            raise UnecpectedApiError(response)
+            raise UnexpectedApiError(response)

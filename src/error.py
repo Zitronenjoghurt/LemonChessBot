@@ -3,7 +3,7 @@ from src.api.api_controller import ApiResponse
 class ApiError(Exception):
     """Exception base class for api-related errors."""
 
-class UnecpectedApiError(ApiError):
+class UnexpectedApiError(ApiError):
     """Raised when the API returned an unexpected response."""
     
     def __init__(self, response: ApiResponse) -> None:
