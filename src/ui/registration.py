@@ -1,15 +1,24 @@
 import discord
 from discord import ui
+from typing import Optional
 from src.api.models.response_models import ApiKeyResponse
 from src.api.resources.user import register
 from src.entities.chess_user import ChessUser
 from src.error import UnexpectedApiError
 from src.ui.custom_embeds import ErrorEmbed, SuccessEmbed
 
-async def check_registration(interaction: discord.Interaction) -> bool:
+async def retrieve_chess_user(interaction: discord.Interaction) -> Optional[ChessUser]:
+    """Checks if the user is already registered for LemonChess.
+
+    Args:
+        interaction (discord.Interaction): The current interaction as context.
+
+    Returns:
+        Optional[ChessUser]: The LemonChess user. Returns None if the user was not registered yet.
+    """
     user = await ChessUser.find_one(discord_id=str(interaction.user.id))
     if isinstance(user, ChessUser):
-        return True
+        return user
     
     embed = RegistrationEmbed()
     confirm_view = RegistrationConfirmView(interaction.user.id, timeout=120)
@@ -27,8 +36,6 @@ async def check_registration(interaction: discord.Interaction) -> bool:
         embed.title = "REGISTRATION CANCELLED"
         embed.color = discord.Color.red()
     await interaction.edit_original_response(embed=embed)
-
-    return False
 
 class RegistrationEmbed(discord.Embed):
     def __init__(self) -> None:
