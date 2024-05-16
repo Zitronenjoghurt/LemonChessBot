@@ -9,6 +9,7 @@ PAGE_SIZE = 25
 class ChessRoomScrollable(AbstractQueryScrollable):
     def __init__(self, page_size: int, starting_page: int = 1) -> None:
         super().__init__(page_size, starting_page)
+        self.user_is_owner = False
 
     @staticmethod
     async def create(key: Optional[str] = None) -> 'ChessRoomScrollable':
@@ -20,6 +21,7 @@ class ChessRoomScrollable(AbstractQueryScrollable):
                 descending=False,
                 key=key
             )
+            scrollable.user_is_owner = True
         else:
             scrollable = await ChessRoomScrollable.create_from_find(
                 entity_cls=ChessRoom,
@@ -37,6 +39,9 @@ class ChessRoomScrollable(AbstractQueryScrollable):
         strings = []
         for room in rooms:
             user_name = await room.get_owner_display_name()
-            string = f"**`{room.code}`** | **{user_name}** | *{room.name}*"
+            if self.user_is_owner:
+                string = f"**`{room.code}`** | *{room.name}*"
+            else:
+                string = f"**`{room.code}`** | **{user_name}** | *{room.name}*"
             strings.append(string)
         return "\n".join(strings)

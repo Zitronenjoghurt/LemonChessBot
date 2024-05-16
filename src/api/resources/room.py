@@ -31,3 +31,27 @@ async def create_room(api_key: str, name: Optional[str], public: Optional[bool])
             raise ExpectedApiError(title="Session limit reached", message="You have reached your session limit and can't create another room yet.")
         case _:
             raise UnexpectedApiError(response)
+        
+async def join_room(api_key: str, code: str) -> None:
+    """Join a multiplayer room.
+
+    Args:
+        code (str): The code of the room to join.
+
+    Raises:
+        ExpectedApiError: When the room doesn't exist or the user can't join the room.
+        UnexpectedApiError: On an unexpected api response.
+
+    Returns:
+        RoomInfo: All important information about the newly created room.
+    """
+    response = await API.post(["room", "join"], api_key=api_key, code=code.upper())
+    match response.status:
+        case 200:
+            return
+        case 400:
+            raise ExpectedApiError(title="Unable to join", message="You are unable to join this room.")
+        case 404:
+            raise ExpectedApiError(title="Room not found", message="There is no open room with the specified code.")
+        case _:
+            raise UnexpectedApiError(response)

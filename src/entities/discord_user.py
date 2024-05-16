@@ -9,3 +9,4 @@ class DiscordUser(DatabaseEntity):
     banned: bool = Field(default=False)
     ban_reason: str = Field(default="")
     settings: Settings = Field(default_factory=Settings)
+    has_played_once: bool = Field(default=False) # Is false if the user never joined a sessioni
