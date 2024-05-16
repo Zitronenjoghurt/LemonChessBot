@@ -1,4 +1,3 @@
-from pydantic import Field
 from src.db import Collection
 from src.entities.database_entity import DatabaseEntity
 

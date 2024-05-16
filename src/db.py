@@ -28,18 +28,36 @@ class Database():
             Database._instance = Database()
         return Database._instance
     
-    async def find_one(self, collection: Collection, **kwargs):
+    async def find_one(self, collection: Collection, filter: Optional[dict] = None, **kwargs):
+        if isinstance(filter, dict):
+            query = filter
+            query.update(kwargs)
+        else:
+            query = kwargs
+
         return await self.db[collection.value].find_one(kwargs)
     
-    async def find(self, collection: Collection, sort_key: Optional[str] = None, descending: bool = True, **kwargs):
+    async def find(self, collection: Collection, sort_key: Optional[str] = None, descending: bool = True, filter: Optional[dict] = None, **kwargs):
+        if isinstance(filter, dict):
+            query = filter
+            query.update(kwargs)
+        else:
+            query = kwargs
+
         if isinstance(sort_key, str):
             designator = DESCENDING if descending else ASCENDING
-            cursor = self.db[collection.value].find(kwargs).sort(sort_key, designator)
+            cursor = self.db[collection.value].find(query).sort(sort_key, designator)
         else:
-            cursor = self.db[collection.value].find(kwargs)
+            cursor = self.db[collection.value].find(query)
         return [document async for document in cursor]
 
-    async def delete_one(self, collection: Collection, **kwargs) -> int:
+    async def delete_one(self, collection: Collection, filter: Optional[dict] = None, **kwargs) -> int:
+        if isinstance(filter, dict):
+            query = filter
+            query.update(kwargs)
+        else:
+            query = kwargs
+
         result = await self.db[collection.value].delete_one(kwargs)
         return result.deleted_count
     
