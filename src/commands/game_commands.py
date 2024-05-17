@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+from src.board_image_handler import retrieve_image_url
 from src.entities.chess_session import ChessSession
 from src.entities.chess_user import ChessUser
 from src.ui.custom_embeds import ErrorEmbed
@@ -11,21 +12,29 @@ class GameCommands(commands.Cog):
     def __init__(self, bot: commands.AutoShardedBot):
         self.bot = bot
     
-    @app_commands.command(name="game", description="Shows you the board and information about a game")
+    @app_commands.command(name="game", description="Shows you the board and information about a game.")
     @app_commands.describe(name="The name of the game.")
     async def game(self, interaction: discord.Interaction, name: str):
-        if not await retrieve_chess_user(interaction=interaction):
+        if not (chess_user := await retrieve_chess_user(interaction=interaction)):
             return
         if not (discord_user := await retrieve_discord_user(interaction=interaction)):
             return
         
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer()
 
         session = await ChessSession.find_by_name(name=name)
         if not session:
             return await interaction.followup.send(embed=ErrorEmbed(title="Game not found", message="The provided name doesn't fit to any of your games."))
         
-        # ToDo: Show game board and info
+        image_url = await retrieve_image_url(session_id=str(session.id), key=chess_user.key)
+
+        embed = discord.Embed(
+            title=session.name,
+            color=discord.Color.from_str("#FAAF4D")
+        )
+        embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar.url)
+        embed.set_image(url=image_url)
+        await interaction.followup.send(embed=embed)
 
     @game.autocomplete("name")
     async def game_names(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class GameState(BaseModel):
     chess_board: object
@@ -24,3 +24,4 @@ class GameState(BaseModel):
     remis: bool
     move_log: list
     san_log: list[str]
+    tick: int = Field(default = 0)

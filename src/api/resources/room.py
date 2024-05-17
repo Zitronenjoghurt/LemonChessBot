@@ -16,6 +16,7 @@ async def create_room(api_key: str, name: Optional[str], public: Optional[bool])
     Raises:
         ExpectedApiError: When the session limit is reached and the user can't create any more rooms.
         UnexpectedApiError: On an unexpected api response.
+        ApiConnectionError: On error while connecting to API.
 
     Returns:
         RoomInfo: All important information about the newly created room.

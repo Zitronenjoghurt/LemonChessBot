@@ -1,6 +1,7 @@
 from typing import Optional
 from bson import ObjectId
 from pydantic import Field
+from src.constants.color import ChessColor
 from src.db import Collection, Database
 from src.entities.database_entity import DatabaseEntity
 from src.entities.game_state import GameState
@@ -34,3 +35,12 @@ class ChessSession(DatabaseEntity):
     async def find_running(key: str) -> list['ChessSession']:
         filter = {"keys": key, "game_state.winner": 2, "game_state.draw": False}
         return await ChessSession.find(filter=filter)
+    
+    def get_color_by_key(self, key: str) -> ChessColor:
+        try:
+            index = self.keys.index(key)
+        except IndexError:
+            index = 0
+        if index == 1:
+            return ChessColor.BLACK
+        return ChessColor.WHITE

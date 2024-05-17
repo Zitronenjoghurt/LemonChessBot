@@ -17,6 +17,7 @@ async def register(id: str, name: str, display_name: str) -> ApiKeyResponse:
     Raises:
         UnecpectedApiError: On unexpected API response
         ValidationError: On invalid API response
+        ApiConnectionError: On error while connecting to API.
 
     Returns:
         Optional[ApiKeyResponse]: Api key, if the user was registered, else None

@@ -1,6 +1,6 @@
 import aiohttp
 from typing import Optional
-from src.error import ApiConnectionError
+from src.error import ApiConnectionError, UnexpectedApiError
 from src.constants.config import Config
 from src.logging.logger import BOTLOGGER
 
@@ -50,6 +50,23 @@ class ApiController():
                     content = await response.text()
                     BOTLOGGER.api_request("GET", url, response.status, content)
                     return ApiResponse(response.status, content)
+        except aiohttp.ClientConnectionError:
+            raise ApiConnectionError()
+        
+    async def get_image(self, file_path: str, endpoint_path: list[str], api_key: str, headers: Optional[dict] = None, **params):
+        url = self.generate_url(endpoint_path, **params)
+
+        try:
+            async with aiohttp.ClientSession(headers=self.build_headers(api_key, headers)) as session:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        image_data = await response.read()
+                        with open(file_path, 'wb') as image_file:
+                            image_file.write(image_data)
+                        BOTLOGGER.api_request("GET", url, response.status, "Image downloaded")
+                    else:
+                        BOTLOGGER.api_request("GET", url, response.status, "Failed to download image")
+                        raise UnexpectedApiError(response=response)
         except aiohttp.ClientConnectionError:
             raise ApiConnectionError()
             
