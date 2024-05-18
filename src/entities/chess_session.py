@@ -54,7 +54,8 @@ class ChessSession(DatabaseEntity):
             if is_player and color.value == self.game_state.next_to_move:
                 information.append("**`YOUR turn`**")
             else:
-                information.append(f"**`{color.name} to move`**")
+                next_color = ChessColor(self.game_state.next_to_move)
+                information.append(f"**`{next_color.name} to move`**")
 
             if self.game_state.check_states[0]:
                 if is_player and color == ChessColor.WHITE:
