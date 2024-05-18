@@ -31,8 +31,10 @@ async def retrieve_image_url(session_id: str, key: str, style: RenderingStyle = 
 
     return image_url
 
-async def delete_old_images(session_id: str, color: str, tick: int, style: str):
+async def delete_old_images(session_id: str, color: int, tick: int, style: str):
     for i in range(tick - 1, -1, -1):
         file_name = IMAGE_NAME.format(session_id=session_id, color=color, tick=i, style=style)
         file_path = get_image_api_path(file_name=file_name)
-        delete_file_if_exists(file_path=file_path)
+        success = delete_file_if_exists(file_path=file_path)
+        if success:
+            break # It only has to delete once, but the last file can be of any previous tick

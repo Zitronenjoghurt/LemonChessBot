@@ -17,7 +17,7 @@ class GameCommands(commands.Cog):
     async def game(self, interaction: discord.Interaction, name: str):
         if not (chess_user := await retrieve_chess_user(interaction=interaction)):
             return
-        if not (discord_user := await retrieve_discord_user(interaction=interaction)):
+        if not await retrieve_discord_user(interaction=interaction):
             return
         
         await interaction.response.defer()
@@ -34,6 +34,9 @@ class GameCommands(commands.Cog):
         )
         embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar.url)
         embed.set_image(url=image_url)
+        embed.add_field(name="STATUS", value=session.get_status(key=chess_user.key), inline=False)
+        embed.add_field(name="LAST MOVE", value=session.get_last_move(), inline=False)
+        embed.set_footer(text="Use /move to play")
         await interaction.followup.send(embed=embed)
 
     @game.autocomplete("name")

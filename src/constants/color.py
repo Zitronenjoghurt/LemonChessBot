@@ -1,5 +1,5 @@
 from enum import Enum
 
 class ChessColor(Enum):
-    WHITE = "WHITE"
-    BLACK = "BLACK"
+    WHITE = 0
+    BLACK = 1

@@ -46,9 +46,11 @@ def dict_to_file(file_path: str, data: dict):
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
 
-def delete_file_if_exists(file_path: str) -> None:
+def delete_file_if_exists(file_path: str) -> bool:
     if file_exists(file_path=file_path):
         os.remove(file_path)
+        return True
+    return False
 
 # Server specific
 def construct_path_server(relative_path: str) -> str:
