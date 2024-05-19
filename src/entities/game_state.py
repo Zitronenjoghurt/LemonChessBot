@@ -4,12 +4,11 @@ from src.constants.color import ChessColor
 
 SAN_PATTERNS = [
     (r'([a-h][1-8])$', "Pawn moves to {}"),
-    (r'([a-h])x([a-h][1-8]) e\.p\.$', "Pawn captures on {} en passant"),
-    (r'([a-h])x([a-h][1-8])Q$', "Pawn captures on {} and promotes to Queen"),
-    (r'([a-h])x([a-h][1-8])$', "Pawn captures on {}"),
+    (r'([a-h][1-8])x([a-h][1-8]) e\.p\.$', "Pawn captures on {} en passant"),
+    (r'([a-h][1-8])x([a-h][1-8])Q$', "Pawn captures on {} and promotes to Queen"),
+    (r'([a-h][1-8])x([a-h][1-8])$', "Pawn captures on {}"),
     (r'([a-h][1-8])Q$', "Pawn moves to {} and promotes to Queen"),
-    (r'([QRBN])([a-h][1-8])$', "{} moves to {}"),
-    (r'([QRBN])x([a-h][1-8])$', "{} captures on {}")
+    (r'([QRBN])([a-h][1-8])x([a-h][1-8])$', "{} moves from {} to {}"),
 ]
 
 PIECE_NAMES = {
