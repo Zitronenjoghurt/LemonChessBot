@@ -59,15 +59,15 @@ class ChessSession(DatabaseEntity):
 
             if self.game_state.check_states[0]:
                 if is_player and color == ChessColor.WHITE:
-                    information.append("You are check")
+                    information.append("**You are check!**")
                 else:
-                    information.append("White is check")
+                    information.append("**White is check!**")
 
             if self.game_state.check_states[1]:
                 if is_player and color == ChessColor.BLACK:
-                    information.append("You are check")
+                    information.append("**You are check!**")
                 else:
-                    information.append("Black is check")
+                    information.append("**Black is check!**")
 
         else:
             if self.game_state.draw:

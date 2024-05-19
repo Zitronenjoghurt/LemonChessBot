@@ -72,6 +72,9 @@ class GameCommands(commands.Cog):
         if chess_user.key not in session.keys:
             return await interaction.followup.send(embed=ErrorEmbed(title="Not a participant", message="You are not a participant of this game."))
         
+        if not session.game_state.is_ongoing():
+            return await interaction.followup.send(embed=ErrorEmbed(title="Game ended", message="This game ended, you can't make any more moves."))
+        
         if chess_user.key != session.keys[session.game_state.next_to_move]:
             return await interaction.followup.send(embed=ErrorEmbed(title="Please wait", message="It's not your turn."))
         
